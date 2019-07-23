@@ -1,0 +1,443 @@
+﻿<%@ master language="C#" autoeventwireup="true" inherits="MasterPageQuicklist, App_Web_q1bp2ybq" %>
+
+<%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="cc1" %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head id="Head1" runat="server">
+    <title>ZDV Web Studio</title>
+    <link href="<%# ResolveClientUrl("~/js/themes/base/ui.all.css")%> " rel="stylesheet"
+        type="text/css" />
+
+    <script src="<%# ResolveClientUrl("~/js/jquery-1.3.2-vsdoc.js")%> " type="text/javascript"></script>
+
+    <script src="<%# ResolveClientUrl("~/js/jquery-1.3.2.js")%> " type="text/javascript"></script>
+
+    <script src="<%# ResolveClientUrl("~/js/ui/ui.core.js")%> " type="text/javascript"></script>
+
+    <script src="<%# ResolveClientUrl("~/js/ui/ui.resizable.js")%> " type="text/javascript"></script>
+
+    <script src="<%# ResolveClientUrl("~/js/ui/ui.dialog.js")%> " type="text/javascript"></script>
+
+    <script src="<%# ResolveClientUrl("~/js/ui/effects.core.js")%> " type="text/javascript"></script>
+
+    <script src="<%# ResolveClientUrl("~/js/ui/effects.highlight.js")%> " type="text/javascript"></script>
+
+    <script src="<%# ResolveClientUrl("~/js/jquery.validate.js")%> " type="text/javascript"></script>
+
+    <script type="text/javascript">
+        var dayarray = new Array("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")
+        var montharray = new Array("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")
+
+        function getthedate() {
+            var mydate = new Date()
+            var year = mydate.getYear()
+            if (year < 1000)
+                year += 1900
+            var day = mydate.getDay()
+            var month = mydate.getMonth()
+            var daym = mydate.getDate()
+            if (daym < 10)
+                daym = "0" + daym
+            var hours = mydate.getHours()
+            var minutes = mydate.getMinutes()
+            var seconds = mydate.getSeconds()
+            var dn = "AM"
+            if (hours >= 12)
+                dn = "PM"
+            if (hours > 12) {
+                hours = hours - 12
+            }
+            if (hours == 0)
+                hours = 12
+            if (minutes <= 9)
+                minutes = "0" + minutes
+            if (seconds <= 9)
+                seconds = "0" + seconds
+            //change font size here
+            var cdate = "<small><font color='ffffff' face='Trebuchet MS'><strong>" + dayarray[day] + ", " + montharray[month] + " " + daym + ", " + year + " " + hours + ":" + minutes + ":" + seconds + " " + dn
++ "</strong></font></small>"
+            if (document.all)
+                document.all.clock.innerHTML = cdate
+            else if (document.getElementById)
+                document.getElementById("clock").innerHTML = cdate
+            else
+                document.write(cdate)
+        }
+        if (!document.all && !document.getElementById)
+            getthedate()
+        function goforit() {
+            if (document.all || document.getElementById)
+                setInterval("getthedate()", 1000)
+        }
+
+        function doClock() { // By Paul Davis - www.kaosweaver.com
+            var t = new Date(), a = doClock.arguments, str = "", i, a1, lang = "1";
+            var month = new Array('January', 'Jan', 'February', 'Feb', 'March', 'Mar', 'April', 'Apr', 'May', 'May', 'June', 'Jun', 'July', 'Jul', 'August', 'Aug', 'September', 'Sep', 'October', 'Oct', 'November', 'Nov', 'December', 'Dec');
+            var tday = new Array('Sunday', 'Sun', 'Monday', 'Mon', 'Tuesday', 'Tue', 'Wednesday', 'Wed', 'Thursday', 'Thr', 'Friday', 'Fri', 'Saturday', 'Sat');
+            for (i = 0; i < a.length; i++) {
+                a1 = a[i].charAt(1); switch (a[i].charAt(0)) {
+                    case "M": if ((Number(a1) == 3) && ((t.getMonth() + 1) < 10)) str += "0";
+                        str += (Number(a1) > 1) ? t.getMonth() + 1 : month[t.getMonth() * 2 + Number(a1)]; break;
+                    case "D": if ((Number(a1) == 1) && (t.getDate() < 10)) str += "0"; str += t.getDate(); break;
+                    case "Y": str += (a1 == '0') ? t.getFullYear() : t.getFullYear().toString().substring(2); break;
+                    case "W": str += tday[t.getDay() * 2 + Number(a1)]; break; default: str += unescape(a[i]);
+                }
+            } return str;
+        }
+
+        $(function() {
+            //            function SaveState(sender, args) {
+            //                // code to save state of update panel controls
+            //                alert("save");
+            //            }
+
+            //            function ReapplyState(sender, args) {
+            //                // code to reapply state of update panel controls
+            //                alert("apply");
+            //            }
+
+            //            Sys.WebForms.PageRequestManager.getInstance().add_beginRequest(SaveState);
+            //            Sys.WebForms.PageRequestManager.getInstance().add_endRequest(ReapplyState);
+
+            $(".rootNode A").contextMenu({
+                menu: 'MenuRoot'
+            }, function(action, el, pos) {
+                QuicklistContextMenu(action, el);
+            });
+
+            $(".defaultNode A").contextMenu({
+                menu: 'MenuDefault'
+            }, function(action, el, pos) {
+                QuicklistContextMenu(action, el);
+            });
+
+            //GUID s\\48e8d94d-e6eb-4b4d-a70f-4c82c3e42630
+            // s\\81694dbe-548d-4921-87eb-f6be61ab7dfb\\778c071f-b419-428b-aecb-68b561c25164
+            function getGUID(mystr) {
+                var reGUID = /\w{8}[-]\w{4}[-]\w{4}[-]\w{4}[-]\w{12}/g //regular expression defining GUID
+                var retArr = [];
+                var retval = '';
+                retArr = mystr.match(reGUID);
+                if (retArr != null) {
+                    retval = retArr[retArr.length - 1];
+                }
+                return retval;
+            }
+
+            function QuicklistContextMenu(action, el) {
+                $("#ctl00_HiddenFieldTreeSelectionID").val(getGUID($(el).attr("href")));
+                if (action == "addquicklist") {
+
+                    $("#ctl00_TextBoxQuicklistName").focus();
+                    $('#dialogquicklist').dialog('open');
+
+                }
+                //                else if (action == "addchildfacility") {
+                //                    var typeitemcount = $("#ctl00_DropDownListFacilityType option").length;
+                //                    if (typeitemcount == 0) {
+                //                        $("#ctl00_TextBoxFacilityTypeName").focus();
+                //                        $('#dialogfacilitytype').dialog('open');
+                //                    }
+                //                    else {
+                //                        $("#ctl00_HiddenFieldParentFacilityID").val($("#ctl00_HiddenFieldTreeSelectionID").val());
+                //                        $('#dialogfacility').dialog('open');
+                //                    }
+                //                }
+                //                else if (action == "addequipment") {
+                //                    if ($('#ctl00_DropDownListEquipmentTypes option').size() == 0)
+                //                        alert("Please first add an equipment type and model with associated tag types");
+                //                    else if ($('#ctl00_DropDownListModels option').size() == 0)
+                //                        alert("Please first add an equipment type and model with associated tag types");
+                //                    else {
+                //                        $("#ctl00_HiddenFieldEquipmentParentFacilityID").val($("#ctl00_HiddenFieldTreeSelectionID").val());
+                //                        $('#dialogequipment').dialog('open');
+                //                    }
+                //                }
+                //                else if (action == "editfacility") {
+
+                //                    //GetFacilityByID
+                //                    var FacilityID = getGUID($(el).attr("href"));
+                //                    var params = JSON.stringify({ pFacilityID: FacilityID });
+                //                    $.ajax({
+                //                        type: "POST",
+                //                        url: "AdminFunctions.aspx/GetFacilityByID",
+                //                        data: params,
+                //                        contentType: "application/json; charset=utf-8",
+                //                        dataType: "json",
+                //                        success: function AjaxSuccess(result) {
+                //                            if (result.d != "") {
+                //                                var allOptionsArray = result.d.split(",");
+                //                                var i = 0;
+                //                                while (i < allOptionsArray.length - 1) {
+                //                                    $("#ctl00_HiddenFieldFacilityID").val($("#ctl00_HiddenFieldTreeSelectionID").val());
+                //                                    $("#ctl00_TextBoxFacilityName").val(allOptionsArray[i]);
+                //                                    $("#ctl00_DropDownListFacilityType").val(allOptionsArray[i + 1]);
+                //                                    i = i + 2;
+                //                                }
+                //                            }
+                //                            $('#dialogfacility').dialog('open');
+                //                        },
+                //                        error: function AjaxFailed(result) {
+                //                            alert("An error occurred.");
+                //                        }
+                //                    });
+                //                }
+                //                else if (action == "deletefacility") {
+                //                    var answer = confirm("Are you sure you want to delete " + $(el).text() + "?");
+                //                    if (answer) {
+                //                        //DeleteFacility and child facilities
+                //                        var FacilityID = getGUID($(el).attr("href"));
+                //                        var params = JSON.stringify({ pFacilityID: FacilityID });
+                //                        $.ajax({
+                //                            type: "POST",
+                //                            url: "AdminFunctions.aspx/DeleteFacility",
+                //                            data: params,
+                //                            contentType: "application/json; charset=utf-8",
+                //                            dataType: "json",
+                //                            success: function AjaxSucceeded(result) {
+                //                                if (result = true) {
+                //                                    window.location.reload();
+                //                                }
+                //                                else {
+                //                                    alert("An error occurred");
+                //                                }
+
+                //                            },
+                //                            error: function AjaxFailed(result) {
+                //                                alert("An error occurred");
+                //                            }
+                //                        });
+                //                    }
+                //                }
+                //                else if (action == "addschematic") {
+                //                    window.location = "AdminSchematic.aspx?id=" + getGUID($(el).attr("href")) + "&node=" + $(el).text();
+                //                }
+            }
+
+            $("#dialogquicklist").dialog({
+                bgiframe: true,
+                autoOpen: false,
+                height: 75,
+                width: 250,
+                modal: true,
+                draggable: false,
+                buttons: {
+                    'Save': function() {
+                        //InsertFacilityType
+                        //                        var FacilityTypeName = $("#ctl00_TextBoxFacilityTypeName").val();
+                        //                        if (FacilityTypeName != "") {
+                        //                            var params = JSON.stringify({ pFacilityTypeName: FacilityTypeName });
+                        //                            $.ajax({
+                        //                                type: "POST",
+                        //                                url: "AdminFunctions.aspx/InsertFacilityType",
+                        //                                data: params,
+                        //                                contentType: "application/json; charset=utf-8",
+                        //                                dataType: "json",
+                        //                                success: PopulateFacilityTypes,
+                        //                                error: function AjaxFailed(result) {
+                        //                                    alert("An error occurred.");
+                        //                                }
+                        //                            });
+                        //                        }
+                        //                        else
+                        //                            alert("Type Name is required");
+                    }
+                },
+                close: function() {
+                    $("#ctl00_TextBoxQuicklistName").val('');
+                    $('#dialogquicklist').dialog('open');
+                }
+            });
+        });
+    </script>
+
+    <asp:ContentPlaceHolder ID="head" runat="server">
+    </asp:ContentPlaceHolder>
+</head>
+<body style="margin-left: 0px; margin-right: 0px; margin-top: 0px;" id="body" runat="server">
+    <form id="form1" runat="server">
+    <asp:ScriptManager ID="ScriptManager1" runat="server">
+    </asp:ScriptManager>
+    <table border="0" width="98%" cellpadding="0" cellspacing="0">
+        <tr>
+            <td style="width: 10%">
+                <img src="images/zencus.jpg" />
+            </td>
+            <td valign="top">
+                <asp:UpdatePanel ID="UpdatePanel1" runat="server">
+                    <ContentTemplate>
+                        <table border="0" width="100.1%" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td>
+                                    <div id="toolbar">
+                                        <ul>
+                                            <li>
+                                                <asp:HyperLink ID="HyperLinkOverview" runat="server" NavigateUrl="OverviewDashboard.aspx">
+                                                    <span>
+                                                        <asp:Image ID="ImageOverview" runat="server" ImageUrl="App_Themes/Blue/images/overview.png" />View</span></asp:HyperLink>
+                                            </li>
+                                            <li>
+                                                <asp:HyperLink ID="HyperLinkPlot" runat="server" NavigateUrl="Plot.aspx">
+                                                    <span>
+                                                        <asp:Image ID="ImagePlot" runat="server" ImageUrl="App_Themes/Blue/images/plot.png" />Plot</span></asp:HyperLink>
+                                            </li>
+                                            <li>
+                                                <asp:HyperLink ID="HyperLinkData" runat="server" NavigateUrl="Data.aspx">
+                                                    <span>
+                                                        <asp:Image ID="ImageData" runat="server" ImageUrl="App_Themes/Blue/images/data.png" />Data</span></asp:HyperLink>
+                                            </li>
+                                            <li>
+                                                <asp:HyperLink ID="HyperLinkReports" runat="server" NavigateUrl="Reports.aspx">
+                                                    <span>
+                                                        <asp:Image ID="ImageReports" runat="server" ImageUrl="App_Themes/Blue/images/report.png" />Reports</span>
+                                                </asp:HyperLink>
+                                            </li>
+                                            <li>
+                                                <asp:HyperLink ID="HyperLinkAlarms" runat="server" NavigateUrl="Alarms.aspx">
+                                                    <span>
+                                                        <asp:Image ID="ImageAlarms" runat="server" ImageUrl="App_Themes/Blue/images/alarms.png" />Alarms</span></asp:HyperLink>
+                                            </li>
+                                            <li>
+                                                <asp:HyperLink ID="HyperLinkAdmin" Visible="false" runat="server" NavigateUrl="Admin/AdminFacility.aspx">
+                                                    <span>
+                                                        <asp:Image ID="ImageAdmin" runat="server" ImageUrl="App_Themes/Blue/images/logoff.png" />Admin</span>
+                                                </asp:HyperLink></li>
+                                            <%-- <li>
+                                                <asp:Label ID="Label1" CssClass="toolbarlabel" runat="server" Text="here">
+                                                    <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                                                </asp:Label>
+                                            </li>--%>
+                                            <li><a href="mailto:zencus@zencus.com?subject=ZDV Web Studio Support Request" target="_blank">
+                                                <span>
+                                                    <asp:Image ID="ImageSupport" runat="server" ImageUrl="App_Themes/Blue/images/support.png" />Support</span></a>
+                                            </li>
+                                            <li>
+                                                <asp:UpdatePanel ID="UpdatePanel3" runat="server">
+                                                    <ContentTemplate>
+                                                        <div id="Layer1" runat="server" style="position: absolute; width: 360px; height: 25px;
+                                                            left: 625px; top: 31px;">
+                                                            <div align="right">
+                                                                <span id="clock" class="clock"></span>
+                                                            </div>
+                                                        </div>
+                                                    </ContentTemplate>
+                                                </asp:UpdatePanel>
+                                            </li>
+                                            <%-- <li>
+                                                <asp:HyperLink ID="HyperLinkLogOff" runat="server" NavigateUrl="~/Logout.aspx">
+                                                    <span>
+                                                        <asp:Image ID="ImageLogOff" runat="server" ImageUrl="App_Themes/Blue/images/logoff.png" />Log
+                                                        Off </span>
+                                                </asp:HyperLink></li>--%>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <asp:Panel ID="PanelTitle" CssClass="PageTitle" runat="server" Width="101.7%" Height="20px"
+                                        HorizontalAlign="Left">
+                                        &nbsp;
+                                        <asp:Label ID="LabelTitle" runat="server" Text="Label"></asp:Label>
+                                    </asp:Panel>
+                                </td>
+                        </table>
+                    </ContentTemplate>
+                </asp:UpdatePanel>
+            </td>
+        </tr>
+        <tr>
+            <td valign="top">
+                <asp:UpdatePanel ID="UpdatePanel2" runat="server">
+                    <ContentTemplate>
+                        <asp:Timer ID="Timer1" runat="server" OnTick="Timer1_Tick">
+                        </asp:Timer>
+                        <asp:Panel ID="PanelTree" runat="server" ScrollBars="Vertical" BorderColor="#ADADAD"
+                            BorderWidth="1">
+                            <asp:HiddenField ID="HiddenFieldTreeSelectionID" runat="server" />
+                            <div id="MyTreeDiv" runat="server">
+                                <%-- <asp:TreeView ID="TreeView1" SkinID="TreeDefaultSkin" runat="server" ExpandDepth="0"
+                                    OnSelectedNodeChanged="TreeView1_SelectedNodeChanged">
+                                </asp:TreeView>--%>
+                                <asp:TreeView ID="TreeView1" SkinID="TreeDefaultSkin" runat="server" OnSelectedNodeChanged="TreeView1_SelectedNodeChanged"
+                                    ExpandDepth="1" PopulateNodesFromClient="False" ShowExpandCollapse="True">
+                                </asp:TreeView>
+                            </div>
+                        </asp:Panel>
+                    </ContentTemplate>
+                </asp:UpdatePanel>
+            </td>
+            <td valign="top">
+                <div>
+                    <asp:ContentPlaceHolder ID="ContentPlaceHolderContent" runat="server">
+                    </asp:ContentPlaceHolder>
+                </div>
+            </td>
+        </tr>
+    </table>
+    <ul id="MenuRoot" class="contextMenu">
+        <li class="copy"><a href="#addquicklist">Add Quicklist</a></li>
+        <li class="copy"><a href="#addqlfacilities">QL Facilities</a></li>
+        <li class="copy"><a href="#addqlusers">QL Users</a></li>
+        <li class="edit"><a href="#editquicklist">Edit</a></li>
+        <li class="delete"><a href="#deletequicklist">Delete</a></li>
+    </ul>
+    <ul id="MenuDefault" class="contextMenu">
+        <li class="copy"><a href="#addquicklist">Add Quicklist</a></li>
+        <li class="edit"><a href="#editquicklist">Edit</a></li>
+    </ul>
+    <div id="dialogquicklist" style="display: none" title="Quicklist">
+        <fieldset>
+            <table>
+                <tr>
+                    <td>
+                        Name:
+                    </td>
+                    <td>
+                        <asp:TextBox ID="TextBoxQuicklistName" SkinID="TextBoxDefaultSkin" runat="server"></asp:TextBox>
+                    </td>
+                    <tr>
+                        <td>
+                            Default:
+                        </td>
+                        <td>
+                            <asp:CheckBox ID="CheckBoxQuicklistDefault" runat="server" />
+                        </td>
+                    </tr>
+                </tr>
+            </table>
+        </fieldset>
+    </div>
+    <cc1:ModalPopupExtender ID="ModalPopupExtenderErrorMaster" runat="server" CancelControlID="HiddenButtonErrorMaster"
+        TargetControlID="HiddenButtonErrorMaster" PopupControlID="PanelErrorHandlerMaster"
+        BackgroundCssClass="modalBackground" >
+    </cc1:ModalPopupExtender>
+    <asp:Button ID="HiddenButtonErrorMaster" runat="Server" Style="display: none" />
+    <asp:Panel ID="PanelErrorHandlerMaster" runat="server" CssClass="modalPopup" Style="display: none">
+        <asp:UpdatePanel ID="UpdatePanel8" runat="server">
+            <ContentTemplate>
+                <asp:Panel ID="Panel1" GroupingText="Warning" runat="server" CssClass="GroupBox">
+                    <table>
+                        <tr>
+                            <td>
+                                <asp:TextBox ID="TextBoxErrorMaster" SkinID="TextBoxDefaultSkin330" ReadOnly="true"
+                                    TextMode="MultiLine" Rows="7" Columns="40" runat="server"></asp:TextBox>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="right">
+                                <asp:LinkButton ID="LinkButtonCloseErrorMaster" OnClick="LinkButtonCloseErrorMaster_Click"
+                                    runat="server">Close</asp:LinkButton>
+                            </td>
+                        </tr>
+                    </table>
+                </asp:Panel>
+            </ContentTemplate>
+        </asp:UpdatePanel>
+    </asp:Panel>
+    </form>
+
+    <script src="js/jquery.contextMenu.js" type="text/javascript"></script>
+
+</body>
+</html>
